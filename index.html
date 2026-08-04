@@ -16,6 +16,18 @@
 </head>
 <body>
 
+  <!-- PARTICLE CANVAS -->
+  <canvas id="particleCanvas"></canvas>
+
+  <!-- HIDDEN SVG DEFINITIONS (dot-grid pattern for project cards) -->
+  <svg class="svg-defs" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <pattern id="dotGrid" x="0" y="0" width="16" height="16" patternUnits="userSpaceOnUse">
+        <circle cx="1" cy="1" r="0.6" fill="rgba(255,255,255,0.15)" />
+      </pattern>
+    </defs>
+  </svg>
+
   <!-- NAV -->
   <nav class="nav" id="nav">
     <div class="nav__inner">
@@ -48,7 +60,22 @@
 
     <!-- HERO -->
     <section class="hero" id="home">
-      <div class="hero__inner container">
+      <!-- Node-graph decoration -->
+      <div class="hero__nodes" aria-hidden="true">
+        <svg viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+          <line x1="80" y1="60" x2="200" y2="140" stroke="rgba(59,130,246,0.12)" stroke-width="1"/>
+          <line x1="200" y1="140" x2="320" y2="80" stroke="rgba(139,92,246,0.10)" stroke-width="1"/>
+          <line x1="200" y1="140" x2="160" y2="280" stroke="rgba(59,130,246,0.08)" stroke-width="1"/>
+          <line x1="160" y1="280" x2="300" y2="320" stroke="rgba(139,92,246,0.08)" stroke-width="1"/>
+          <line x1="320" y1="80" x2="300" y2="320" stroke="rgba(59,130,246,0.06)" stroke-width="1"/>
+          <circle cx="80" cy="60" r="3" fill="rgba(59,130,246,0.25)"/>
+          <circle cx="200" cy="140" r="4" fill="rgba(139,92,246,0.3)"/>
+          <circle cx="320" cy="80" r="3" fill="rgba(59,130,246,0.2)"/>
+          <circle cx="160" cy="280" r="3.5" fill="rgba(139,92,246,0.2)"/>
+          <circle cx="300" cy="320" r="3" fill="rgba(59,130,246,0.2)"/>
+        </svg>
+      </div>
+      <div class="hero__inner container container--wide">
         <div class="hero__content">
           <div class="hero__tag reveal">AI Engineer · Software Engineer · Builder</div>
           <h1 class="hero__title reveal">
@@ -153,35 +180,38 @@
 
       <div class="ticker-wrap">
         <div class="ticker">
-          <span>TensorFlow</span><span class="ticker-dot">◆</span>
-          <span>Scikit-learn</span><span class="ticker-dot">◆</span>
-          <span>NLP</span><span class="ticker-dot">◆</span>
-          <span>Computer Vision</span><span class="ticker-dot">◆</span>
-          <span>LangChain</span><span class="ticker-dot">◆</span>
-          <span>LangGraph</span><span class="ticker-dot">◆</span>
-          <span>OpenAI</span><span class="ticker-dot">◆</span>
-          <span>Azure OpenAI</span><span class="ticker-dot">◆</span>
-          <span>Amazon Bedrock</span><span class="ticker-dot">◆</span>
-          <span>PyTorch</span><span class="ticker-dot">◆</span>
-          <span>FastAPI</span><span class="ticker-dot">◆</span>
-          <span>AWS</span><span class="ticker-dot">◆</span>
-          <span>Docker</span><span class="ticker-dot">◆</span>
-          <span>Kubernetes</span><span class="ticker-dot">◆</span>
-          <!-- duplicate for seamless loop -->
-          <span>TensorFlow</span><span class="ticker-dot">◆</span>
-          <span>Scikit-learn</span><span class="ticker-dot">◆</span>
-          <span>NLP</span><span class="ticker-dot">◆</span>
-          <span>Computer Vision</span><span class="ticker-dot">◆</span>
-          <span>LangChain</span><span class="ticker-dot">◆</span>
-          <span>LangGraph</span><span class="ticker-dot">◆</span>
-          <span>OpenAI</span><span class="ticker-dot">◆</span>
-          <span>Azure OpenAI</span><span class="ticker-dot">◆</span>
-          <span>Amazon Bedrock</span><span class="ticker-dot">◆</span>
-          <span>PyTorch</span><span class="ticker-dot">◆</span>
-          <span>FastAPI</span><span class="ticker-dot">◆</span>
-          <span>AWS</span><span class="ticker-dot">◆</span>
-          <span>Docker</span><span class="ticker-dot">◆</span>
-          <span>Kubernetes</span><span class="ticker-dot">◆</span>
+          <span>TensorFlow</span><span class="ticker-dot">&#9670;</span>
+          <span>Scikit-learn</span><span class="ticker-dot">&#9670;</span>
+          <span>NLP</span><span class="ticker-dot">&#9670;</span>
+          <span>Computer Vision</span><span class="ticker-dot">&#9670;</span>
+          <span>LangChain</span><span class="ticker-dot">&#9670;</span>
+          <span>LangGraph</span><span class="ticker-dot">&#9670;</span>
+          <span>OpenAI</span><span class="ticker-dot">&#9670;</span>
+          <span>Azure OpenAI</span><span class="ticker-dot">&#9670;</span>
+          <span>Amazon Bedrock</span><span class="ticker-dot">&#9670;</span>
+          <span>PyTorch</span><span class="ticker-dot">&#9670;</span>
+          <span>FastAPI</span><span class="ticker-dot">&#9670;</span>
+          <span>AWS</span><span class="ticker-dot">&#9670;</span>
+          <span>Docker</span><span class="ticker-dot">&#9670;</span>
+          <span>Kubernetes</span><span class="ticker-dot">&#9670;</span>
+          <span>n8n</span><span class="ticker-dot">&#9670;</span>
+          <span>Emergent</span><span class="ticker-dot">&#9670;</span>
+          <span>TensorFlow</span><span class="ticker-dot">&#9670;</span>
+          <span>Scikit-learn</span><span class="ticker-dot">&#9670;</span>
+          <span>NLP</span><span class="ticker-dot">&#9670;</span>
+          <span>Computer Vision</span><span class="ticker-dot">&#9670;</span>
+          <span>LangChain</span><span class="ticker-dot">&#9670;</span>
+          <span>LangGraph</span><span class="ticker-dot">&#9670;</span>
+          <span>OpenAI</span><span class="ticker-dot">&#9670;</span>
+          <span>Azure OpenAI</span><span class="ticker-dot">&#9670;</span>
+          <span>Amazon Bedrock</span><span class="ticker-dot">&#9670;</span>
+          <span>PyTorch</span><span class="ticker-dot">&#9670;</span>
+          <span>FastAPI</span><span class="ticker-dot">&#9670;</span>
+          <span>AWS</span><span class="ticker-dot">&#9670;</span>
+          <span>Docker</span><span class="ticker-dot">&#9670;</span>
+          <span>Kubernetes</span><span class="ticker-dot">&#9670;</span>
+          <span>n8n</span><span class="ticker-dot">&#9670;</span>
+          <span>Emergent</span><span class="ticker-dot">&#9670;</span>
         </div>
       </div>
 
@@ -197,6 +227,7 @@
               <span>LLMs</span><span>RAG Systems</span><span>AI Agents</span>
               <span>LangChain</span><span>LangGraph</span><span>OpenAI</span>
               <span>Azure OpenAI</span><span>Amazon Bedrock</span><span>Amazon Lex</span>
+              <span>Emergent</span>
             </div>
           </div>
 
@@ -218,7 +249,7 @@
             <h3>Backend Development</h3>
             <div class="skill-tags">
               <span>Python</span><span>FastAPI</span><span>REST APIs</span>
-              <span>Microservices</span>
+              <span>Microservices</span><span>n8n</span>
             </div>
           </div>
 
@@ -250,7 +281,7 @@
 
     <!-- PROJECTS -->
     <section class="projects" id="projects">
-      <div class="container">
+      <div class="container container--wide">
         <div class="section-header reveal">
           <span class="section-eyebrow">Work</span>
           <h2 class="section-title">Products with<br />an intelligent <em>spine.</em></h2>
@@ -258,9 +289,10 @@
 
         <div class="projects-grid">
 
-          <div class="project-card reveal" data-index="01">
+          <div class="project-card reveal" data-project="0">
             <div class="project-card__media">
               <div class="project-card__bg project-card__bg--1"></div>
+              <svg class="project-card__dots" aria-hidden="true"><rect width="100%" height="100%" fill="url(#dotGrid)"/></svg>
               <div class="project-card__overlay"></div>
               <div class="project-card__num">01</div>
             </div>
@@ -274,13 +306,15 @@
                 <span class="project-status project-status--live">
                   <span></span>Production
                 </span>
+                <span class="project-card__cta">View Details &rarr;</span>
               </div>
             </div>
           </div>
 
-          <div class="project-card reveal" data-index="02">
+          <div class="project-card reveal" data-project="1">
             <div class="project-card__media">
               <div class="project-card__bg project-card__bg--2"></div>
+              <svg class="project-card__dots" aria-hidden="true"><rect width="100%" height="100%" fill="url(#dotGrid)"/></svg>
               <div class="project-card__overlay"></div>
               <div class="project-card__num">02</div>
             </div>
@@ -294,13 +328,15 @@
                 <span class="project-status project-status--live">
                   <span></span>Production
                 </span>
+                <span class="project-card__cta">View Details &rarr;</span>
               </div>
             </div>
           </div>
 
-          <div class="project-card reveal" data-index="03">
+          <div class="project-card reveal" data-project="2">
             <div class="project-card__media">
               <div class="project-card__bg project-card__bg--3"></div>
+              <svg class="project-card__dots" aria-hidden="true"><rect width="100%" height="100%" fill="url(#dotGrid)"/></svg>
               <div class="project-card__overlay"></div>
               <div class="project-card__num">03</div>
             </div>
@@ -308,19 +344,21 @@
               <div class="project-card__tags">
                 <span>RAG</span><span>Embeddings</span><span>Vector DB</span>
               </div>
-              <h3>Semantic Search & RAG Systems</h3>
+              <h3>Semantic Search & RAG</h3>
               <p>Designed and deployed retrieval systems that improve answer accuracy by combining large language models with enterprise knowledge bases for intelligent, context-aware responses.</p>
               <div class="project-card__footer">
                 <span class="project-status project-status--live">
                   <span></span>Production
                 </span>
+                <span class="project-card__cta">View Details &rarr;</span>
               </div>
             </div>
           </div>
 
-          <div class="project-card reveal" data-index="04">
+          <div class="project-card reveal" data-project="3">
             <div class="project-card__media">
               <div class="project-card__bg project-card__bg--4"></div>
+              <svg class="project-card__dots" aria-hidden="true"><rect width="100%" height="100%" fill="url(#dotGrid)"/></svg>
               <div class="project-card__overlay"></div>
               <div class="project-card__num">04</div>
             </div>
@@ -334,6 +372,51 @@
                 <span class="project-status project-status--live">
                   <span></span>Production
                 </span>
+                <span class="project-card__cta">View Details &rarr;</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-card reveal" data-project="4">
+            <div class="project-card__media">
+              <div class="project-card__bg project-card__bg--5"></div>
+              <svg class="project-card__dots" aria-hidden="true"><rect width="100%" height="100%" fill="url(#dotGrid)"/></svg>
+              <div class="project-card__overlay"></div>
+              <div class="project-card__num">05</div>
+            </div>
+            <div class="project-card__body">
+              <div class="project-card__tags">
+                <span>Azure Functions</span><span>LangChain</span><span>PyMuPDF</span><span>Python</span>
+              </div>
+              <h3>AI Invoice Extraction</h3>
+              <p>Cloud-native document intelligence pipeline on Azure that automatically extracts structured data from diverse invoice formats using LLMs, eliminating manual data entry across the 340B program.</p>
+              <div class="project-card__footer">
+                <span class="project-status project-status--live">
+                  <span></span>Production
+                </span>
+                <span class="project-card__cta">View Details &rarr;</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="project-card reveal" data-project="5">
+            <div class="project-card__media">
+              <div class="project-card__bg project-card__bg--6"></div>
+              <svg class="project-card__dots" aria-hidden="true"><rect width="100%" height="100%" fill="url(#dotGrid)"/></svg>
+              <div class="project-card__overlay"></div>
+              <div class="project-card__num">06</div>
+            </div>
+            <div class="project-card__body">
+              <div class="project-card__tags">
+                <span>LangGraph</span><span>Multi-Agent</span><span>Sub-Agents</span><span>Python</span>
+              </div>
+              <h3>LangGraph Multi-Agent System</h3>
+              <p>A proof-of-concept multi-level agent orchestration system built on LangGraph, featuring hierarchical sub-agent delegation for complex, multi-step reasoning tasks.</p>
+              <div class="project-card__footer">
+                <span class="project-status project-status--poc">
+                  <span></span>POC
+                </span>
+                <span class="project-card__cta">View Details &rarr;</span>
               </div>
             </div>
           </div>
@@ -368,9 +451,13 @@
                 <li>Designed agentic AI workflows for intelligent automation of complex operations</li>
                 <li>Created text-to-SQL services enabling natural language database access</li>
                 <li>Developed semantic search solutions improving information retrieval accuracy</li>
+                <li>Guided development teams on efficient adoption of Claude Code for AI-assisted engineering</li>
+                <li>Optimized internal codebase quality and developer productivity using AI tooling</li>
+                <li>Reverse-engineered legacy application versions and rebuilt them on modern architectures</li>
+                <li>Built an automated defect report newsletter pipeline using n8n workflow automations</li>
               </ul>
               <div class="timeline-item__tags">
-                <span>FastAPI</span><span>RAG</span><span>LangChain</span><span>OpenAI</span><span>AWS</span>
+                <span>FastAPI</span><span>RAG</span><span>LangChain</span><span>OpenAI</span><span>AWS</span><span>n8n</span><span>Azure</span>
               </div>
             </div>
           </div>
@@ -454,48 +541,6 @@
       </div>
     </section>
 
-    <!-- CURRENTLY EXPLORING -->
-    <section class="exploring" id="exploring">
-      <div class="container">
-        <div class="section-header reveal">
-          <span class="section-eyebrow">Currently Exploring</span>
-          <h2 class="section-title">Always at the<br /><em>frontier.</em></h2>
-        </div>
-        <div class="exploring-grid">
-          <div class="explore-item reveal">
-            <div class="explore-item__icon">→</div>
-            <h3>Agentic AI Systems</h3>
-            <p>Multi-step autonomous agents that plan, act, and iterate to accomplish complex goals.</p>
-          </div>
-          <div class="explore-item reveal">
-            <div class="explore-item__icon">→</div>
-            <h3>Advanced RAG Architectures</h3>
-            <p>Hybrid retrieval, reranking, and knowledge graph-enhanced generation pipelines.</p>
-          </div>
-          <div class="explore-item reveal">
-            <div class="explore-item__icon">→</div>
-            <h3>Multi-Agent Systems</h3>
-            <p>Orchestrated networks of specialized agents collaborating on enterprise workflows.</p>
-          </div>
-          <div class="explore-item reveal">
-            <div class="explore-item__icon">→</div>
-            <h3>AI Engineering</h3>
-            <p>Best practices for building, evaluating, and maintaining production AI applications.</p>
-          </div>
-          <div class="explore-item reveal">
-            <div class="explore-item__icon">→</div>
-            <h3>Production LLM Applications</h3>
-            <p>Observability, guardrails, and performance optimization for real-world LLM deployments.</p>
-          </div>
-          <div class="explore-item reveal">
-            <div class="explore-item__icon">→</div>
-            <h3>Cloud-Native AI Infrastructure</h3>
-            <p>Scalable, cost-efficient infrastructure patterns for AI workloads on AWS and Azure.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- BEYOND WORK -->
     <section class="beyond" id="beyond">
       <div class="container">
@@ -529,13 +574,13 @@
             </div>
           </div>
         </div>
-        <p class="beyond-note reveal">This section is growing — check back for photos, stories, and interests from outside the world of code.</p>
+        <p class="beyond-note reveal">This section is growing -- check back for photos, stories, and interests from outside the world of code.</p>
       </div>
     </section>
 
     <!-- BLOG -->
     <section class="blog" id="blog">
-      <div class="container">
+      <div class="container container--wide">
         <div class="section-header reveal">
           <span class="section-eyebrow">Writing</span>
           <h2 class="section-title">Notes from<br />the <em>workshop.</em></h2>
@@ -544,26 +589,26 @@
           <article class="blog-card reveal">
             <div class="blog-card__tag">AI Engineering</div>
             <h3>Building Production RAG Systems That Actually Work</h3>
-            <p>Lessons learned from deploying retrieval-augmented generation pipelines in enterprise environments — what breaks, what scales, and what no one tells you.</p>
-            <a href="#" class="blog-card__link">Coming soon →</a>
+            <p>Lessons learned from deploying retrieval-augmented generation pipelines in enterprise environments -- what breaks, what scales, and what no one tells you.</p>
+            <a href="#" class="blog-card__link">Coming soon &rarr;</a>
           </article>
           <article class="blog-card reveal">
             <div class="blog-card__tag">Agentic AI</div>
             <h3>From Chatbots to Agents: The Architecture Shift</h3>
-            <p>How agentic workflows fundamentally change the way we design AI systems — planning, tool use, memory, and the new challenges that come with it.</p>
-            <a href="#" class="blog-card__link">Coming soon →</a>
+            <p>How agentic workflows fundamentally change the way we design AI systems -- planning, tool use, memory, and the new challenges that come with it.</p>
+            <a href="#" class="blog-card__link">Coming soon &rarr;</a>
           </article>
           <article class="blog-card reveal">
             <div class="blog-card__tag">LLM Applications</div>
             <h3>Text-to-SQL: Making Data Accessible to Everyone</h3>
             <p>A deep dive into building reliable natural language to SQL conversion systems, covering prompt engineering, schema understanding, and error handling.</p>
-            <a href="#" class="blog-card__link">Coming soon →</a>
+            <a href="#" class="blog-card__link">Coming soon &rarr;</a>
           </article>
           <article class="blog-card reveal">
             <div class="blog-card__tag">Cloud</div>
             <h3>AI Infrastructure on AWS: Patterns and Pitfalls</h3>
-            <p>Practical patterns for deploying scalable AI workloads on AWS — from model serving to data pipelines, and the cost traps to avoid.</p>
-            <a href="#" class="blog-card__link">Coming soon →</a>
+            <p>Practical patterns for deploying scalable AI workloads on AWS -- from model serving to data pipelines, and the cost traps to avoid.</p>
+            <a href="#" class="blog-card__link">Coming soon &rarr;</a>
           </article>
         </div>
       </div>
@@ -571,7 +616,7 @@
 
     <!-- CONTACT CTA -->
     <section class="contact" id="contact">
-      <div class="container">
+      <div class="container container--wide">
         <div class="contact-inner reveal">
           <span class="section-eyebrow">Get in touch</span>
           <h2 class="contact__headline">
@@ -580,7 +625,7 @@
           </h2>
           <p class="contact__sub">
             Whether you have a project in mind, want to discuss AI engineering,<br class="hide-mobile" />
-            or just want to connect — my inbox is always open.
+            or just want to connect -- my inbox is always open.
           </p>
           <a href="mailto:hello@altafansari.dev" class="contact__email">
             hello@altafansari.dev
@@ -613,10 +658,22 @@
           <a href="#experience">Experience</a>
           <a href="#contact">Contact</a>
         </nav>
-        <span class="footer__copy">© 2025 Altaf Ansari. Built with care.</span>
+        <span class="footer__copy">&copy; 2025 Altaf Ansari. Built with care.</span>
       </div>
     </div>
   </footer>
+
+  <!-- PROJECT MODAL -->
+  <div class="project-modal" id="projectModal">
+    <div class="project-modal__backdrop" data-close></div>
+    <div class="project-modal__panel">
+      <button class="project-modal__close" data-close aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="project-modal__hero" id="modalHero"></div>
+      <div class="project-modal__content" id="modalContent"></div>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
