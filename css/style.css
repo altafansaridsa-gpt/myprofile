@@ -454,6 +454,15 @@ main::before {
   background: radial-gradient(circle at 50% 30%, rgba(59,130,246,0.08) 0%, transparent 60%);
 }
 
+.hero__photo-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center top;
+  position: relative;
+  z-index: 1;
+}
+
 .hero__initials {
   font-size: 72px;
   font-weight: 900;
@@ -823,6 +832,13 @@ main::before {
     radial-gradient(circle at 25% 75%, rgba(236,72,153,0.08) 0%, transparent 40%),
     repeating-linear-gradient(120deg, rgba(168,85,247,0.03) 0px, transparent 1px, transparent 30px);
 }
+.project-card__bg--7 {
+  background: linear-gradient(135deg, #060e0a 0%, #0a1e14 40%, #071a0e 100%);
+  background-image:
+    radial-gradient(circle at 35% 45%, rgba(0,255,136,0.12) 0%, transparent 50%),
+    radial-gradient(circle at 75% 30%, rgba(102,68,255,0.1) 0%, transparent 40%),
+    repeating-linear-gradient(55deg, rgba(0,255,136,0.03) 0px, transparent 1px, transparent 30px);
+}
 
 /* Dot-grid SVG overlay */
 .project-card__dots {
@@ -1114,6 +1130,9 @@ main::before {
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
   margin-bottom: 32px;
+}
+.beyond-grid--three {
+  grid-template-columns: repeat(3, 1fr);
 }
 
 .beyond-card {
