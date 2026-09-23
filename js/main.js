@@ -1,5 +1,6 @@
 // =========================================
-// PARTICLE SYSTEM
+// NEURAL NETWORK BACKGROUND
+// Forward & backward propagation visualization
 // =========================================
 (function () {
   var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -10,13 +11,37 @@
   var ctx = canvas.getContext('2d');
 
   var dpr = Math.min(window.devicePixelRatio || 1, 2);
-  var particles = [];
   var animId;
   var paused = false;
   var isMobile = window.innerWidth < 768;
-  var PARTICLE_COUNT = isMobile ? 35 : 80;
-  var CONNECTION_DIST = 120;
-  var SHOW_CONNECTIONS = !isMobile;
+
+  var neurons = [];
+  var connections = [];
+  var signals = [];
+
+  var cfg = {
+    layers: isMobile ? 6 : 9,
+    neuronsMin: isMobile ? 4 : 7,
+    neuronsMax: isMobile ? 8 : 12,
+    maxSignals: isMobile ? 12 : 24,
+    spawnRate: 0.03,
+    connectionProb: 0.55,
+    chainForward: 0.5,
+    chainBackward: 0.45
+  };
+
+  var FWD_COLORS = [
+    { r: 0, g: 255, b: 136 },
+    { r: 0, g: 255, b: 170 },
+    { r: 0, g: 230, b: 118 }
+  ];
+  var BWD_COLORS = [
+    { r: 102, g: 68, b: 255 },
+    { r: 136, g: 102, b: 255 },
+    { r: 124, g: 58, b: 237 }
+  ];
+
+  function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
 
   function resize() {
     canvas.width = window.innerWidth * dpr;
@@ -26,21 +51,115 @@
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  function createParticles() {
-    particles = [];
+  function buildNetwork() {
+    neurons = [];
+    connections = [];
+    signals = [];
+
     var w = window.innerWidth;
     var h = window.innerHeight;
-    for (var i = 0; i < PARTICLE_COUNT; i++) {
-      particles.push({
-        x: Math.random() * w,
-        y: Math.random() * h,
-        r: 0.4 + Math.random() * 1.4,
-        dx: (Math.random() - 0.5) * 0.3,
-        dy: (Math.random() - 0.5) * 0.3,
-        baseAlpha: 0.15 + Math.random() * 0.25,
-        phase: Math.random() * Math.PI * 2
+    var mx = w * 0.06;
+    var my = h * 0.08;
+    var layerGap = (w - mx * 2) / (cfg.layers - 1);
+    var availH = h - my * 2;
+
+    for (var l = 0; l < cfg.layers; l++) {
+      var count = cfg.neuronsMin + Math.floor(Math.random() * (cfg.neuronsMax - cfg.neuronsMin + 1));
+      if (l > 1 && l < cfg.layers - 2) count = Math.min(count + 1, cfg.neuronsMax);
+
+      for (var n = 0; n < count; n++) {
+        neurons.push({
+          x: mx + l * layerGap + (Math.random() - 0.5) * layerGap * 0.25,
+          y: my + (n + 0.5) * (availH / count) + (Math.random() - 0.5) * availH * 0.08,
+          layer: l,
+          radius: 1.4 + Math.random() * 2.2,
+          baseAlpha: 0.2 + Math.random() * 0.25,
+          activation: 0,
+          actColor: null,
+          phase: Math.random() * Math.PI * 2
+        });
+      }
+    }
+
+    for (var i = 0; i < neurons.length; i++) {
+      for (var j = 0; j < neurons.length; j++) {
+        if (neurons[j].layer === neurons[i].layer + 1 && Math.random() < cfg.connectionProb) {
+          connections.push({ from: i, to: j });
+        }
+      }
+    }
+
+    for (var i = 0; i < neurons.length; i++) {
+      var ni = neurons[i];
+      if (ni.layer < cfg.layers - 1) {
+        var hasOut = false;
+        for (var c = 0; c < connections.length; c++) { if (connections[c].from === i) { hasOut = true; break; } }
+        if (!hasOut) {
+          var t = [];
+          for (var j = 0; j < neurons.length; j++) { if (neurons[j].layer === ni.layer + 1) t.push(j); }
+          if (t.length) connections.push({ from: i, to: pick(t) });
+        }
+      }
+      if (ni.layer > 0) {
+        var hasIn = false;
+        for (var c = 0; c < connections.length; c++) { if (connections[c].to === i) { hasIn = true; break; } }
+        if (!hasIn) {
+          var s = [];
+          for (var j = 0; j < neurons.length; j++) { if (neurons[j].layer === ni.layer - 1) s.push(j); }
+          if (s.length) connections.push({ from: pick(s), to: i });
+        }
+      }
+    }
+
+  }
+
+  function spawnSignal() {
+    if (signals.length >= cfg.maxSignals || !connections.length) return;
+
+    var isForward = Math.random() < 0.6;
+    var connIdx, color;
+
+    if (isForward) {
+      var early = [];
+      for (var i = 0; i < connections.length; i++) {
+        if (neurons[connections[i].from].layer < 2) early.push(i);
+      }
+      connIdx = early.length ? pick(early) : Math.floor(Math.random() * connections.length);
+      color = pick(FWD_COLORS);
+      signals.push({
+        ci: connIdx, progress: 0,
+        speed: 0.006 + Math.random() * 0.008,
+        dir: 'fwd', r: color.r, g: color.g, b: color.b,
+        glow: 3 + Math.random() * 4
+      });
+    } else {
+      var late = [];
+      for (var i = 0; i < connections.length; i++) {
+        if (neurons[connections[i].to].layer > cfg.layers - 3) late.push(i);
+      }
+      connIdx = late.length ? pick(late) : Math.floor(Math.random() * connections.length);
+      color = pick(BWD_COLORS);
+      signals.push({
+        ci: connIdx, progress: 1,
+        speed: -(0.005 + Math.random() * 0.007),
+        dir: 'bwd', r: color.r, g: color.g, b: color.b,
+        glow: 2.5 + Math.random() * 3.5
       });
     }
+  }
+
+  function curvePoint(c, t) {
+    var a = neurons[c.from], b = neurons[c.to];
+    var mx = (a.x + b.x) / 2;
+    var my = (a.y + b.y) / 2 + (a.y - b.y) * 0.15;
+    var u = 1 - t;
+    return { x: u * u * a.x + 2 * u * t * mx + t * t * b.x, y: u * u * a.y + 2 * u * t * my + t * t * b.y };
+  }
+
+  function drawCurve(c) {
+    var a = neurons[c.from], b = neurons[c.to];
+    ctx.moveTo(a.x, a.y);
+    ctx.quadraticCurveTo((a.x + b.x) / 2, (a.y + b.y) / 2 + (a.y - b.y) * 0.15, b.x, b.y);
   }
 
   function draw() {
@@ -49,49 +168,97 @@
     var h = window.innerHeight;
     ctx.clearRect(0, 0, w, h);
 
-    for (var i = 0; i < particles.length; i++) {
-      var p = particles[i];
-      p.x += p.dx;
-      p.y += p.dy;
-      p.phase += 0.008;
+    if (Math.random() < cfg.spawnRate) spawnSignal();
 
-      if (p.x < -10) p.x = w + 10;
-      if (p.x > w + 10) p.x = -10;
-      if (p.y < -10) p.y = h + 10;
-      if (p.y > h + 10) p.y = -10;
+    ctx.beginPath();
+    for (var i = 0; i < connections.length; i++) drawCurve(connections[i]);
+    ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+    ctx.lineWidth = 0.5;
+    ctx.stroke();
 
-      var alpha = p.baseAlpha + Math.sin(p.phase) * 0.1;
+    for (var i = signals.length - 1; i >= 0; i--) {
+      var s = signals[i];
+      var c = connections[s.ci];
+      s.progress += s.speed;
+
+      if (s.progress > 1.05 || s.progress < -0.05) {
+        var tgt = s.dir === 'fwd' ? c.to : c.from;
+        neurons[tgt].activation = 1;
+        neurons[tgt].actColor = s.dir;
+
+        var cp = s.dir === 'fwd' ? cfg.chainForward : cfg.chainBackward;
+        if (Math.random() < cp && signals.length < cfg.maxSignals) {
+          var next = [];
+          for (var j = 0; j < connections.length; j++) {
+            if (s.dir === 'fwd' ? connections[j].from === c.to : connections[j].to === c.from) next.push(j);
+          }
+          if (next.length) {
+            var ni = pick(next);
+            signals.push({
+              ci: ni, progress: s.dir === 'fwd' ? 0 : 1,
+              speed: s.dir === 'fwd' ? (0.006 + Math.random() * 0.008) : -(0.005 + Math.random() * 0.007),
+              dir: s.dir, r: s.r, g: s.g, b: s.b, glow: s.glow
+            });
+          }
+        }
+        signals.splice(i, 1);
+        continue;
+      }
+
+      var t = Math.max(0, Math.min(1, s.progress));
+      var pos = curvePoint(c, t);
+      var cs = Math.round(s.r) + ',' + Math.round(s.g) + ',' + Math.round(s.b);
+
       ctx.beginPath();
-      ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-      ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+      drawCurve(c);
+      ctx.strokeStyle = 'rgba(' + cs + ',0.15)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      var gr = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, s.glow * 3);
+      gr.addColorStop(0, 'rgba(' + cs + ',0.7)');
+      gr.addColorStop(0.35, 'rgba(' + cs + ',0.2)');
+      gr.addColorStop(1, 'rgba(' + cs + ',0)');
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, s.glow * 3, 0, Math.PI * 2);
+      ctx.fillStyle = gr;
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, s.glow * 0.4, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(' + cs + ',1)';
       ctx.fill();
     }
 
-    if (SHOW_CONNECTIONS) {
-      var distSq = CONNECTION_DIST * CONNECTION_DIST;
-      for (var i = 0; i < particles.length; i++) {
-        for (var j = i + 1; j < particles.length; j++) {
-          var dx = particles[i].x - particles[j].x;
-          var dy = particles[i].y - particles[j].y;
-          var d2 = dx * dx + dy * dy;
-          if (d2 < distSq) {
-            var lineAlpha = (1 - d2 / distSq) * 0.06;
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.strokeStyle = 'rgba(255,255,255,' + lineAlpha + ')';
-            ctx.lineWidth = 0.5;
-            ctx.stroke();
-          }
-        }
+    for (var i = 0; i < neurons.length; i++) {
+      var n = neurons[i];
+      n.phase += 0.008;
+      if (n.activation > 0) n.activation = Math.max(0, n.activation - 0.018);
+
+      var alpha = n.baseAlpha + Math.sin(n.phase) * 0.04 + n.activation * 0.4;
+
+      if (n.activation > 0.05) {
+        var gc = n.actColor === 'fwd' ? '0,255,136' : '102,68,255';
+        var gg = ctx.createRadialGradient(n.x, n.y, 0, n.x, n.y, n.radius * 10);
+        gg.addColorStop(0, 'rgba(' + gc + ',' + (n.activation * 0.45) + ')');
+        gg.addColorStop(1, 'rgba(' + gc + ',0)');
+        ctx.beginPath();
+        ctx.arc(n.x, n.y, n.radius * 10, 0, Math.PI * 2);
+        ctx.fillStyle = gg;
+        ctx.fill();
       }
+
+      ctx.beginPath();
+      ctx.arc(n.x, n.y, n.radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+      ctx.fill();
     }
 
     animId = requestAnimationFrame(draw);
   }
 
   resize();
-  createParticles();
+  buildNetwork();
   draw();
 
   var resizeTimer;
@@ -99,10 +266,12 @@
     clearTimeout(resizeTimer);
     resizeTimer = setTimeout(function () {
       isMobile = window.innerWidth < 768;
-      PARTICLE_COUNT = isMobile ? 35 : 80;
-      SHOW_CONNECTIONS = !isMobile;
+      cfg.layers = isMobile ? 6 : 9;
+      cfg.neuronsMin = isMobile ? 4 : 7;
+      cfg.neuronsMax = isMobile ? 8 : 12;
+      cfg.maxSignals = isMobile ? 12 : 24;
       resize();
-      createParticles();
+      buildNetwork();
     }, 200);
   });
 
@@ -278,6 +447,16 @@ document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
       approach: 'Designed a hierarchical agent architecture using LangGraph where a supervisor agent decomposes complex tasks and delegates sub-tasks to specialized child agents. Each sub-agent has its own tools, system prompt, and domain focus. The supervisor coordinates execution flow, aggregates results, handles failures, and synthesizes final outputs. The graph-based state management enables conditional routing, parallel execution branches, and iterative refinement loops.',
       stack: ['Python', 'LangGraph', 'LangChain', 'OpenAI', 'Azure OpenAI'],
       outcome: 'Demonstrated that hierarchical multi-agent systems outperform single-agent approaches on complex, multi-domain tasks. The modular architecture allows new sub-agents to be added without modifying existing ones, enabling scalable growth of system capabilities.'
+    },
+    {
+      title: 'KYPB — Know Your Product Better',
+      tags: ['AI Agents', 'Python', 'Dashboards', 'Code Quality', 'LLMs'],
+      bgClass: 'project-card__bg--7',
+      summary: 'A one-stop product intelligence agent that provides instant answers about product architecture, ongoing issues, resolution metrics, and code quality — all powered by AI models and interactive dashboards.',
+      problem: 'Product knowledge was scattered across documentation, codebases, Jira boards, and tribal knowledge. Teams spent significant time tracking down information about product architecture, issue timelines, and code health. There was no single source of truth for cross-cutting product intelligence.',
+      approach: 'Built an AI-powered agent that ingests product documentation, issue trackers, and source code repositories. The agent answers natural language queries about product features, architecture, and workflows. Integrated dashboards surface real-time metrics: ongoing issues, average resolution times, issue trends, and code quality reports covering vulnerabilities, duplications, and maintainability scores. Code analysis pipelines run on each commit to keep quality data current.',
+      stack: ['Python', 'LLMs', 'LangChain', 'FastAPI', 'SonarQube', 'Jira API', 'React', 'PostgreSQL', 'Docker'],
+      outcome: 'Consolidated product intelligence into a single platform. Teams get instant answers to product queries instead of searching across tools. Code quality dashboards reduced undetected vulnerabilities and drove measurable improvements in code maintainability across multiple products.'
     }
   ];
 
